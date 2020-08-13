@@ -1,5 +1,6 @@
 import React from 'react';
 import { GlobalStyle } from './style';
+import { GlobalFontStyle } from './statics/iconfont/iconfont';
 import Header from './common/header'
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <div>
       <Header />
       <GlobalStyle />
+      <GlobalFontStyle />
     </div>
   );
 }
