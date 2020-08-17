@@ -60,7 +60,9 @@ const Header = (props) => {
 const mapStateToProps = (state) => {
     return {
         //focused: state.header.focused
-        focused: state.header.get('focused')
+        focused: state.get('header').get('focused')
+        // 等价写法
+        //focused: state.getIn(['header','focused'])
     }
 }
 
