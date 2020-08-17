@@ -22,22 +22,38 @@ import {
 class Header extends Component {
 
     getListArea() {
-        const { focused, list }  = this.props;
-        if (focused) {
+        const { focused,page, mouseIn, totalPage, list, handleChangePage, handleMouseEnter, handleMouseLeave }  = this.props;
+        // 将immutable对象转成普通js对象，
+        // 方便下面的取值操作，如 newList[i]
+        const newList = list.toJS();
+        const pageList = [];
+       if(newList.length) {
+           for(let i = (page-1) * 10; i < page * 10; i++) {
+               pageList.push(
+                   <SearchInfoItem key={newList[i]}>{ newList[i] }</SearchInfoItem>
+               )
+           }
+       }
+
+
+
+        if (focused || mouseIn) {
             return (
-                <SearchInfo>
+                <SearchInfo
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
                     <SearchInfoTitle>
                         热门搜索
-                        <SearchInfoSwitch>
+                        <SearchInfoSwitch
+                            onClick={() => handleChangePage(page, totalPage, this.spinIcon)}
+                        >
+                            <i ref={(icon) => {this.spinIcon = icon}} className="iconfont spin">&#xe851;</i>
                             换一批
                         </SearchInfoSwitch>
                     </SearchInfoTitle>
                     <SearchInfoList>
-                        {
-                            list.map((item) => {
-                                return <SearchInfoItem key={item}>{ item }</SearchInfoItem>
-                            })
-                        }
+                        { pageList }
                     </SearchInfoList>
                 </SearchInfo>
             )
@@ -48,7 +64,7 @@ class Header extends Component {
     }
 
     render() {
-        const { focused, handleInputFocus, handleInputBlur }  = this.props;
+        const { focused, list, handleInputFocus, handleInputBlur }  = this.props;
         return (
             <HeaderWrapper>
                 <Logo />
@@ -67,12 +83,12 @@ class Header extends Component {
                         >
                             <NavSearch
                                 className={ focused ? 'focused' : '' }
-                                onFocus={ handleInputFocus }
+                                onFocus={ () => {handleInputFocus(list)} }
                                 onBlur={ handleInputBlur }
                             >
                             </NavSearch>
                         </CSSTransition>
-                        <i className={ focused ? 'iconfont focused' : 'iconfont'}>
+                        <i className={ focused ? 'iconfont focused zoom' : 'iconfont zoom'}>
                             &#xe614;
                         </i>
 
@@ -98,18 +114,42 @@ const mapStateToProps = (state) => {
         focused: state.get('header').get('focused'),
         // 等价写法
         //focused: state.getIn(['header','focused'])
-        list: state.getIn(['header','list'])
+        mouseIn: state.getIn(['header','mouseIn']),
+        list: state.getIn(['header','list']),
+        page: state.getIn(['header','page']),
+        totalPage: state.getIn(['header','totalPage'])
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        handleInputFocus() {
-            dispatch(actionCreators.getList())
+        handleInputFocus(list) {
+            (list.size === 0) && dispatch(actionCreators.getList())
             dispatch(actionCreators.searchFocus())
         },
         handleInputBlur() {
             dispatch(actionCreators.searchBlur())
+        },
+        handleChangePage(page, totalPage, spin) {
+            let originAngle = spin.style.transform.replace(/[^0-9]/ig, '');
+            if (originAngle) {
+                originAngle = parseInt(originAngle, 10);
+            }else {
+                originAngle = 0;
+            }
+            spin.style.transform = 'rotate('+(originAngle + 360)+'deg)';
+
+            if(page < totalPage) {
+                dispatch(actionCreators.changePage((page + 1)))
+            }else {
+                dispatch(actionCreators.changePage(1))
+            }
+        },
+        handleMouseEnter() {
+            dispatch(actionCreators.mouseEnter())
+        },
+        handleMouseLeave() {
+            dispatch(actionCreators.mouseLeave())
         }
     }
 }
