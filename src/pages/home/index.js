@@ -1,11 +1,11 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import Topic from "./components/Topic";
 import List from "./components/List";
 import Recommend from "./components/Recommend";
 import Writer from "./components/Writer";
 import { connect } from 'react-redux';
 import { actionCreators } from './store';
-import { BackTop } from './style'
+import { BackTop } from './style';
 
 import {
     HomeWrapper,
@@ -13,11 +13,12 @@ import {
     HomeRight
 } from './style';
 
-class Home extends Component{
+class Home extends PureComponent{
 
     handleScrollTop() {
         window.scrollTo(0, 0);
     }
+
 
     render() {
         return (
