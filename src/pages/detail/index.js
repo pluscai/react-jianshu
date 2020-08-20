@@ -5,17 +5,14 @@ import {
     DetailWrapper,
     Header,
     Content
-} from './style'
-
-
+} from './style';
+import { withRouter } from 'react-router-dom'
 class Detail extends PureComponent{
     render() {
         return (
             <DetailWrapper>
                 <Header>{this.props.title}</Header>
-                <Content
-                    dangerouslySetInnerHTML={{__html: this.props.content}}
-                />
+                <Content dangerouslySetInnerHTML={{__html: this.props.content}} />
             </DetailWrapper>
         )
     }
@@ -36,4 +33,4 @@ const mapDispatch = (dispatch) => ({
     }
 })
 
-export default connect(mapState,mapDispatch)(Detail);
+export default connect(mapState,mapDispatch)(withRouter(Detail));
